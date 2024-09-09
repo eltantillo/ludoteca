@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="rental_order_wizard_defect_view_form" model="ir.ui.view">
+        <field name="name">rental.order.defect.wizard.form</field>
+        <field name="model">rental.order.defect.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="order_id" invisible="1"/>
+                        <field name="product_template_id" invisible="1"/>
+                        <field name="order_line_id"/>
+                        <field name="product_piece_id"/>
+                    </group>
+                    <group>
+                        <field name="qty"/>
+                    </group>
+                    <footer>
+                        <button name="apply" string="Confirm" type="object" class="btn-primary" data-hotkey="q"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

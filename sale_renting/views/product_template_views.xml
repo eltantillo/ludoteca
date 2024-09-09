@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="product_template_form_view_rental" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.rental</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="sale_temporal.product_template_form_view_pricing"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='options']" position='inside'>
+                <span class="d-inline-block">
+                    <field name="rent_ok"/>
+                    <label for="rent_ok"/>
+                </span>
+            </xpath>
+            <xpath expr="//notebook/page[@name='sales']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible':[('sale_ok','=',False), ('rent_ok', '=', False)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='detailed_type']" position="after">
+                <field name="rent_product" attrs="{'invisible': [('sale_ok', '=', False)]}"/>
+            </xpath>
+            <group name="pricing" position="after">
+                <group string="Delays" name="extra_rental" attrs="{'invisible': [('rent_ok', '=', False)]}">
+                    <label for="extra_hourly"/>
+                    <div class="d-flex">
+                        <span class="oe_inline" style="padding-top:2px;">%</span>
+                        <field name="extra_hourly_percent"/>
+                        <field name="extra_hourly" widget="monetary"/>
+                    </div>
+                    <label for="extra_daily"/>
+                    <div class="d-flex">
+                        <span class="oe_inline" style="padding-top:2px;">%</span>
+                        <field name="extra_daily_percent"/>
+                        <field name="extra_daily" widget="monetary"/>
+                    </div>
+                    <field name="currency_id" invisible="1"/>
+                </group>
+            </group>
+            <xpath expr="//notebook" position="inside">
+                <page name="Boardgame">
+                    <group>
+                        <group string="Metadata">
+                            <field name="product_tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            <field name="is_expansion"/>
+                            <label for="players_max" string="Players"/>
+                            <div class="d-flex">
+                                <field name="players_min"/>
+                                <span class="oe_inline" style="padding-top:2px;">to</span>
+                                <field name="players_max"/>
+                                <span class="oe_inline" style="padding-top:2px;">people</span>
+                            </div>
+                            <label for="time_max" string="Playtime"/>
+                            <div class="d-flex">
+                                <field name="time_min"/>
+                                <span class="oe_inline" style="padding-top:2px;">to</span>
+                                <field name="time_max"/>
+                                <span class="oe_inline" style="padding-top:2px;">minutes</span>
+                            </div>
+                            <field name="age"/>
+                            <field name="level"/>
+                        </group>
+
+                        <group string="Board Game Pieces">
+                            <field name="pieces">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="qty" sum="Total game pieces"/>
+                                    <field name="group_value" sum="Make sure it's 100%"/>
+                                    <field name="individual_value"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="rental_product_template_search_view" model="ir.ui.view">
+        <field name="name">product.template.search.inherit.rental</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="filter_to_purchase" position="after">
+                <filter string="Can be Rented" name="filter_to_rent" domain="[('rent_ok', '=', True)]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="rental_product_template_action" model="ir.actions.act_window">
+        <field name="name">Products</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{
+            'default_sale_ok': False,
+            'default_rent_ok': True,
+            'default_detailed_type': 'consu',
+            'default_purchase_ok': False,
+            'search_default_filter_to_rent': True,
+        }
+        </field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new rental product!
+            </p>
+            <p>
+                You can also create additional products or services to sell by checking *Can be Sold* in the product form (e.g. insurance).
+            </p>
+        </field>
+    </record>
+
+    <record id="rental_product_template_kanban" model="ir.actions.act_window.view">
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="sale_temporal.product_template_kanban_view"/>
+        <field name="act_window_id" ref="rental_product_template_action"/>
+    </record>
+
+    <record id="rental_product_template_tree" model="ir.actions.act_window.view">
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="sale_temporal.product_template_tree_view"/>
+        <field name="act_window_id" ref="rental_product_template_action"/>
+    </record>
+
+    <record id="rental_defect_action" model="ir.actions.act_window">
+        <field name="name">Defects</field>
+        <field name="res_model">product.piece.defect</field>
+        <field name="view_mode">tree,kanban,form</field>
+    </record>
+
+    <record id="rental_piece_action" model="ir.actions.act_window">
+        <field name="name">Pieces</field>
+        <field name="res_model">product.piece</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+</odoo>
